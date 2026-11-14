@@ -7,6 +7,7 @@ import { GoogleGenAI } from "@google/genai";
 // brings express library into file
 // use express to build a server!
 import express from "express";
+import { TUTOR_SYSTEM_PROMPT } from "./prompts/tutor";
 
 // create an express application instance
 const app = express();
@@ -79,6 +80,9 @@ app.post("/api/chat", async (req, res) => {
         const response = await ai.models.generateContent({
             model: "gemini-3.5-flash",
             contents: message,
+            config: {
+                systemInstruction: TUTOR_SYSTEM_PROMPT,
+            }
         });
 
         res.json({
