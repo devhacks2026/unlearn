@@ -63,6 +63,36 @@ app.get("/api/test-gemini", async (_req, res) => {
     }
 });
 
+app.post("/api/chat", async (req, res) => {
+    try {
+        // object destructuring
+        // short for const message = req.body.message;
+        const { message } = req.body;
+
+        if (typeof message !== "string" || !message.trim()) {
+            res.status(400).json({
+                error: "A message is required.",
+            });
+            return;
+        }
+
+        const response = await ai.models.generateContent({
+            model: "gemini-3.5-flash",
+            contents: message,
+        });
+
+        res.json({
+            message: response.text ?? "Gemini returned no text. :(",
+        });
+    } catch (error) {
+        console.error("Gemini API error:", error);
+
+        res.status(500).json({
+            error: "Failed to get a response from Gemini.",
+        });
+    }
+});
+
 // start the server and listen on the specified port
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
