@@ -1,0 +1,20 @@
+// configure how TypeScript compiles the server code
+{
+  "compilerOptions": {
+    // specifies JS language features to target
+    "target": "ES2022",
+    // tells TypeScript to follow modern Node.js module rules
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    // enables stronger type checking
+    "strict": true,
+    // helps import CommonJS libraries like Express
+    "esModuleInterop": true,
+    // means this configuration is for type checking and not making JS files
+    "noEmit": true,
+    // avoid checking internals of installed library declaration files
+    "skipLibCheck": true
+  },
+  // limits the check to our backend src folder only
+  "include": ["src"]
+}
