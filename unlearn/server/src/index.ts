@@ -38,7 +38,7 @@ app.get("/api/health", (_req, res) => {
     // send JSON data to client
     res.json({
         status: "ok",
-        message: "Unlearn backend is running!",
+        reply: "Unlearn backend is running!",
     });
 });
 
@@ -53,7 +53,7 @@ app.get("/api/test-gemini", async (_req, res) => {
 
         // if no response back, provide a default message
         res.json({
-            message: response.text ?? "Gemini returned no text. :(",
+            reply: response.text ?? "Gemini returned no text. :(",
         });
     } catch (error) {
         console.error("Gemini API error:", error);
@@ -129,7 +129,7 @@ app.post("/api/chat", async (req, res) => {
         });
 
         res.json({
-            message: response.text ?? "Gemini returned no text. :(",
+            reply: response.text ?? "Gemini returned no text. :(",
         });
     } catch (error) {
         console.error("Gemini API error:", error);
