@@ -471,3 +471,82 @@ button {
   font-size: 0.85rem;
   font-style: italic;
 }
+
+/* Keep the Send button visible */
+.app-container .send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  flex-shrink: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #cbd7f0;
+  color: #243b53;
+
+  font-size: 1.4rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  opacity: 1;
+  visibility: visible;
+}
+
+.app-container .send-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.app-container .send-btn:not(:disabled):hover {
+  background: #b4c5e8;
+}
+
+.app-container .input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.app-container .user-input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Keep chat messages aligned correctly */
+.app-container .chat-messages {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+/* Keep message bubbles at natural width */
+.app-container .message {
+  width: fit-content;
+  max-width: min(75%, 700px);
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+/* Student messages appear on the right */
+.app-container .message--user {
+  align-self: flex-end;
+}
+
+/* Gemini messages appear on the left */
+.app-container .message--model {
+  align-self: flex-start;
+}
+
+/* Thinking indicator shouldn't be squeezed */
+.app-container .message--pending {
+  min-width: 190px;
+  white-space: nowrap;
+}
