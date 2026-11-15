@@ -3,6 +3,7 @@
 
 // import shared TypeScript type we created for channels
 import type { Channel, Message } from "../types/study";
+import type { ConceptAssessment } from "./chatApi";
 
 // key to identify app's data in localStorage
 // localStorage stores data using key-value pairs
@@ -108,4 +109,68 @@ export function getMessages(channelId: string): Message[] {
     // channel?.messages means access messages if channel exists
     // ?? [] means if messages array exists, return it. otherwise empty array
     return channel?.messages ?? [];
+}
+
+// save the assessments to the concept
+export function updateConcepts(
+    channelId: string,
+    assessments: ConceptAssessment[]
+): void {
+    // retrieve all saved channels from localStorage
+    const channels = getChannels();
+
+    // .findIndex() searches for concept matching assessment's name
+    // returns index of matching concept or -1 if concept doesn't exist
+    const channelExists = channels.some(
+        (channel) => channel.id === channelId
+    );
+
+    if (!channelExists) {
+        throw new Error("Channel not found.");
+    }
+
+    // create new array of updated channels with the new assessments applied to the concepts
+    const updatedChannels = channels.map((channel) => {
+        // if the channel is not the one we are updating, return it as is
+        if (channel.id !== channelId) {
+            return channel;
+        }
+
+        // otherwise, this is the channel we are updating
+        const updatedConcepts = [...channel.concepts];
+
+        // iterate over each assessment and update the corresponding concept in the channel
+        for (const assessment of assessments) {
+            // search for existing concept
+            const existingIndex = updatedConcepts.findIndex(
+                (concept) =>
+                    concept.name.toLowerCase() ===
+                    assessment.concept.toLowerCase()
+            );
+
+            // if the concept exists, update it; otherwise, add a new concept
+            if (existingIndex !== -1) {
+                updatedConcepts[existingIndex] = {
+                    ...updatedConcepts[existingIndex],
+                    status: assessment.status,
+                    explanation: assessment.explanation,
+                };
+            } else {
+                updatedConcepts.push({
+                    id: crypto.randomUUID(),
+                    name: assessment.concept,
+                    status: assessment.status,
+                    explanation: assessment.explanation,
+                });
+            }
+        }
+
+        return {
+            ...channel,
+            concepts: updatedConcepts,
+        };
+    });
+
+    // return new chanel object with updated concepts
+    saveChannels(updatedChannels);
 }

@@ -1,5 +1,10 @@
 import type { Message } from "../types/study";
-import { getChannels, getMessages, addMessage } from "./storage";
+import {
+    getChannels,
+    getMessages,
+    addMessage,
+    updateConcepts,
+} from "./storage";
 import { sendMessage } from "./chatApi";
 
 export async function sendStudyMessage(
@@ -39,19 +44,22 @@ export async function sendStudyMessage(
     // send previous history and new message to gemini
     // remember --> restrict to only 40 messages back
     const recentHistory = history.slice(-40);
-    const reply = await sendMessage(trimmedText, recentHistory);
+    const result = await sendMessage(trimmedText, recentHistory);
 
     // create gemini's response message object
     const assistantMessage: Message = {
         id: crypto.randomUUID(),
         role: "assistant",
-        content: reply,
+        content: result.reply,
         // convert Date object into standardized string using ISO format
         createdAt: new Date().toISOString(),
     };
 
     // save gemini's response message
     addMessage(channelId, assistantMessage);
+
+    // update assessments for the concepts in the channel
+    updateConcepts(channelId, result.assessments);
 
     // return the response to the UI
     return assistantMessage;
