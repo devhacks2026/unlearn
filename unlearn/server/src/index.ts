@@ -3,11 +3,14 @@ import "dotenv/config";
 // imports the class we'll use to communicate with gemini
 // the class is like a blueprint for creating objects
 // will create an object that knows how to make gemini api requests
-import { GoogleGenAI } from "@google/genai";
+// Type provides predefined schema types like Type.OBJECT, Type.STRING, Type.ARRAY
+    // used to describe structure of gemini's output
+import { GoogleGenAI, Type } from "@google/genai";
 // brings express library into file
 // use express to build a server!
 import express from "express";
 import { TUTOR_SYSTEM_PROMPT } from "./prompts/tutor";
+import type { TutorResponse } from "./types/assessment";
 
 // create an express application instance
 const app = express();
@@ -26,6 +29,46 @@ if (!apiKey) {
 
 // create gemini client that we'll use for API requests
 const ai = new GoogleGenAI({ apiKey });
+
+const tutorResponseSchema = {
+    // response should be one json object
+    type: Type.OBJECT,
+    // properties define which fields object should contain
+    properties: {
+        reply: {
+            type: Type.STRING,
+            description: "The tutor's next conversational response or question.",
+        },
+        // assessments is an array of objects representing the student's understanding of concepts
+        assessments: {
+            type: Type.ARRAY,
+            description: "Concepts evaluated from the student's reasoning.",
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    concept: {
+                        type: Type.STRING,
+                    },
+                    status: {
+                        type: Type.STRING,
+                        // restrict allowed values so gemini doesn't drift off from these 4
+                        enum: [
+                            "not_assessed",
+                            "developing",
+                            "understood",
+                            "misunderstood"
+                        ],
+                    },
+                    explanation: {
+                        type: Type.STRING,
+                    },
+                },
+                required: ["concept", "status", "explanation"],
+            },
+        },
+    },
+    required: ["reply", "assessments"],
+}
 
 // tells express how to interpret incoming JSON request bodies
 app.use(express.json());
@@ -125,12 +168,49 @@ app.post("/api/chat", async (req, res) => {
             contents,
             config: {
                 systemInstruction: TUTOR_SYSTEM_PROMPT,
+                // responseMimeType is config property used to force AI to return data in specific format instead of raw text
+                responseMimeType: "application/json",
+                responseSchema: tutorResponseSchema,
             }
         });
 
-        res.json({
-            reply: response.text ?? "Gemini returned no text. :(",
-        });
+        if (!response.text) {
+            throw new Error("Gemini returned an empty response.");
+        }
+
+        // don't want TS to blindly assume gemini's response is valid
+        // so, we check here!
+        // converts JSON text gemini generated into JS value
+        const parsed: unknown = JSON.parse(response.text);
+
+        if (
+            typeof parsed !== "object" ||
+            parsed === null ||
+            !("reply" in parsed) ||
+            typeof parsed.reply !== "string" ||
+            !("assessments" in parsed) ||
+            !Array.isArray(parsed.assessments) ||
+            !parsed.assessments.every(
+                (item) =>
+                    item !== null &&
+                    typeof item === "object" &&
+                    typeof item.concept === "string" &&
+                    typeof item.explanation === "string" &&
+                    [
+                        "not_assessed",
+                        "developing",
+                        "understood",
+                        "misunderstood"
+                    ].includes(item.status)
+            )
+        ) {
+            throw new Error("Gemini returned an invalid assessment format.");
+        }
+
+        const result = parsed as TutorResponse;
+
+        // express sends the full structured response to frontend here
+        res.json(result);
     } catch (error) {
         console.error("Gemini API error:", error);
 
