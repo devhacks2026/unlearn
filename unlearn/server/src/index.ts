@@ -68,18 +68,61 @@ app.post("/api/chat", async (req, res) => {
     try {
         // object destructuring
         // short for const message = req.body.message;
-        const { message } = req.body;
+        // history represents the previous messages in the conversation
+        // if no history, use empty array as default
+        const { message, history = [] } = req.body ?? {};
 
-        if (typeof message !== "string" || !message.trim()) {
+        if (
+            typeof message !== "string" ||
+            !message.trim() ||
+            message.length > 5000
+        ) {
             res.status(400).json({
-                error: "A message is required.",
+                error: "Message must have 1 to 5000 characters only.",
+            });
+            return;
+        }
+        
+        // take in account the previous conversations
+        // validate the conversation history
+        // restrict history length to 40 messages --> save costs
+        if (
+            !Array.isArray(history) ||
+            history.length > 40 ||
+            !history.every(
+                (item) => 
+                    item !== null &&
+                    typeof item === "object" &&
+                    // use "assistant" for gemini
+                    // gemini's api uses "model" instead tho
+                    (item.role === "user" || item.role === "assistant") &&
+                    typeof item.content === "string" &&
+                    item.content.trim().length > 0 &&
+                    item.content.length <= 5000
+            )
+        ) {
+            res.status(400).json({
+                error: "Invalid conversation history.",
             });
             return;
         }
 
+        // convert app's messages into Gemini's format
+        const contents = [
+            ...history.map((item) => ({
+                role: item.role === "assistant" ? "model" : "user",
+                parts: [{ text: item.content }],
+            })),
+            {
+                role: "user",
+                parts: [{ text: message }],
+            },
+        ];
+
+        // send the entire conversation to Gemini
         const response = await ai.models.generateContent({
             model: "gemini-3.5-flash",
-            contents: message,
+            contents,
             config: {
                 systemInstruction: TUTOR_SYSTEM_PROMPT,
             }
