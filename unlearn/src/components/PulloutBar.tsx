@@ -1,15 +1,13 @@
 import { useState } from 'react'
 import './PulloutBar.css'
+import type { Concept } from "../types/study";
 
-function PulloutBar() {
+interface PulloutBarProps {
+  concepts: Concept[];
+}
+
+function PulloutBar({ concepts }: PulloutBarProps) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-
-    const topics = [
-        { name: "Topic #1", status: "not-covered" },
-        { name: "Topic #2", status: "not-covered" },
-        { name: "Topic #3", status: "not-covered" },
-        { name: "Topic #4", status: "not-covered" }
-    ]
 
     return (
         <>
@@ -36,12 +34,23 @@ function PulloutBar() {
                 <h2 className="sidebar-heading">Topics</h2>
 
                 <div id="topicList" className="topic-list">
-                    {topics.map((topic, index) => (
-                        <div key={index} className="topic">
-                            <span>{topic.name}</span>
-                            <span className={`progress-circle ${topic.status}`}></span>
+                    {concepts.length === 0 ? (
+                        <p className="empty-topics">
+                            No concepts assessed yet. Start chatting to discover what you know!
+                        </p>
+                    ) : (
+                        concepts.map((concept) => (
+                        <div key={concept.id} className="topic">
+                            <span>{concept.name}</span>
+
+                            <span
+                                className={`progress-circle ${concept.status}`}
+                                title={concept.explanation ?? concept.status}
+                                aria-label={`${concept.name}: ${concept.status}`}
+                            />
                         </div>
-                    ))}
+                        ))
+                    )}
                 </div>
             </aside>
         </>

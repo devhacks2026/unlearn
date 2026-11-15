@@ -71,10 +71,12 @@
 
 /* Progress circles */
 .progress-circle {
+    display: inline-block;
     width: 12px;
     height: 12px;
+    min-width: 12px;
     border-radius: 50%;
-    display: inline-block;
+    flex-shrink: 0;
 }
 
 /* Progress status colors */
@@ -92,4 +94,26 @@
 
 .mastery {
     background-color: green;
+}
+
+/* Understanding status colors */
+
+/* Blue: Gemini hasn't assessed this concept yet */
+.progress-circle.not_assessed {
+  background-color: #3b82f6;
+}
+
+/* Yellow: Student is still developing understanding */
+.progress-circle.developing {
+  background-color: #facc15;
+}
+
+/* Green: Student demonstrates understanding */
+.progress-circle.understood {
+  background-color: #22c55e;
+}
+
+/* Red: Gemini identified a misconception */
+.progress-circle.misunderstood {
+  background-color: #ef4444;
 }

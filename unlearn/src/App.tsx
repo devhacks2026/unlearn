@@ -3,7 +3,7 @@ import PulloutBar from './components/PulloutBar'
 import './App.css'
 import { useRef, useState } from "react";
 import type { ChangeEvent, SubmitEvent } from "react";
-import type { Message } from "./types/study";
+import type { Message, Concept } from "./types/study";
 import LeftSidebar from "./components/layout/LeftSidebar";
 
 import {
@@ -46,6 +46,14 @@ function App() {
   // aka start with messages that were previously saved to localStorage
   const [messages, setMessages] = useState<Message[]>(
     () => getMessages(channelId)
+  );
+
+  // create react state containing array of concepts
+  const [concepts, setConcepts] = useState<Concept[]>(
+    // load saved channels from localStorage
+    () => getChannels().find(
+      (channel) => channel.id === channelId
+    )?.concepts ?? []                                   // use empty array if no matching channel found
   );
 
   // track whether gemini is responding
@@ -117,6 +125,14 @@ function App() {
 
       // purpose of above code is so that student's input is immediately displayed
       // while gemini continues to think
+
+      // load Gemini's latest concept assessments in topics bar
+      const updatedChannel = getChannels().find(
+        (channel) => channel.id === channelId
+      );
+
+      // update react state --> re-render when concepts state changes
+      setConcepts(updatedChannel?.concepts ?? []);
     } catch (error) {
       console.error("Failed to send message: ", error);
 
@@ -187,6 +203,12 @@ function App() {
     // load its saved chat history
     setMessages(getMessages(id));
 
+    const selectedChannel = getChannels().find(
+      (channel) => channel.id === id
+    );
+
+    setConcepts(selectedChannel?.concepts ?? []);
+
     // clear the previous channel's input and errors
     setInput("");
     setError("");
@@ -220,8 +242,9 @@ function App() {
     // automatically switch to the newly created channel
     setChannelId(newChannel.id);
 
-    // new channels have empty conversation histories
+    // new channels have empty conversation histories and concepts
     setMessages([]);
+    setConcepts([]);
 
     // clear input and errors
     setInput("");
@@ -238,7 +261,8 @@ function App() {
         disabled={isSending}
       />
 
-      <PulloutBar />
+      {/* react prop --> send concepts state from App into component */}
+      <PulloutBar concepts={concepts}/>
 
     <div className="app-container">
 
