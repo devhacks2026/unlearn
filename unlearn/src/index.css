@@ -385,3 +385,58 @@ button {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Chat appearance */
+.app-container .chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 32px;
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1;
+}
+
+.app-container .message {
+  max-width: 75%;
+  padding: 14px 18px;
+  border-radius: 16px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.app-container .message--user {
+  align-self: flex-end;
+  background: #e0e7ff;
+  color: #25354a;
+}
+
+.app-container .message--model {
+  align-self: flex-start;
+  background: #ffffff;
+  color: #25354a;
+  border: 1px solid #e2e8f0;
+}
+
+.app-container .message p {
+  margin: 0;
+}
+
+.app-container .chat-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 32px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.app-container .chat-form {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 18px;
+  padding: 10px;
+}
+
+.app-container .user-input {
+  color: #25354a;
+}
