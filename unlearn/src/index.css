@@ -1,5 +1,5 @@
 /* tells tailwind to generate its CSS utilities */
-@import "tailwindcss"; */
+@import "tailwindcss";
 
 /* target every element */
 * {
