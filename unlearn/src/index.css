@@ -1,4 +1,7 @@
-/* Apply to every element */
+/* tells tailwind to generate its CSS utilities */
+@import "tailwindcss";
+
+/* target every element */
 * {
   box-sizing: border-box;
 }
