@@ -23,12 +23,18 @@ button {
 }
 
 /* Main application */
-.app-container {
+.layout {
+  display: flex;
   width: 100%;
-  max-width: 850px;
   height: 100vh;
   height: 100dvh;
-  margin: 0 auto;
+  overflow: hidden;
+}
+
+.app-container {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -298,4 +304,84 @@ button {
   .user-input {
     font-size: 0.85rem;
   }
+}
+
+/* Left sidebar */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  height: 100%;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  transition: width 0.2s ease;
+  overflow: hidden;
+}
+
+/* Collapsed sidebar */
+.sidebar.collapsed {
+  width: 64px;
+  align-items: center;
+}
+
+/* Collapse and expand button */
+.sidebar-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.3rem;
+  align-self: flex-end;
+  padding: 0.5rem;
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.logo {
+  font-size: 1.4rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.subjects {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.menu-label {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+
+.nav-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  background: var(--bg-secondary-hover);
+}
+
+.nav-item.active {
+  background: var(--bg-secondary-hover);
+  font-weight: bold;
+}
+
+.nav-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

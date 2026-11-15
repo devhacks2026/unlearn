@@ -1,8 +1,8 @@
 
 import { useRef, useState } from "react";
 import type { ChangeEvent, SubmitEvent } from "react";
-
 import type { Message } from "./types/study";
+import LeftSidebar from "./components/layout/LeftSidebar";
 
 import {
   getChannels,
@@ -17,26 +17,28 @@ import "./index.css";
 function App() {
   const [input, setInput] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  
-  // use React's useState to remember the current channel ID
-  // lazy initiation used (calls initializer when setting up component than recalculating result on every render)
-  const [channelId] = useState<string>(() => {
-    // retrieve the channels saved in localStorage
+    
+  // load all existing channels, or create a default one
+  const [channels, setChannels] = useState(() => {
     const existingChannels = getChannels();
 
-    // if at least one exists, use the id of the first channel
     if (existingChannels.length > 0) {
-      return existingChannels[0].id;
+      return existingChannels;
     }
 
-    // otherwise, create a new channel and return its id
     const newChannel = createChannel(
       "General Study",
       "My first Unlearn study session"
     );
 
-    return newChannel.id;
+    return [newChannel];
   });
+
+  // track which channel the student is currently viewing
+  // setChannelId will allow us to change which subject is selected
+  const [channelId, setChannelId] = useState<string>(
+    () => channels[0].id
+  );
 
   // load saved messages for the current channel
   // aka start with messages that were previously saved to localStorage
@@ -161,7 +163,79 @@ function App() {
     recognition.start();
   };
 
+  // left sidebar - switch to an existing study channel
+  const handleSelectChannel = (id: string) => {
+    // don't switch channels while gemini is responding
+    if (isSending) {
+      return;
+    }
+
+    // make sure the selected channel exists
+    const channelExists = channels.some(
+      (channel) => channel.id === id
+    );
+
+    if (!channelExists) {
+      return;
+    }
+
+    // update the active channel
+    setChannelId(id);
+
+    // load its saved chat history
+    setMessages(getMessages(id));
+
+    // clear the previous channel's input and errors
+    setInput("");
+    setError("");
+  };
+
+  // create a new study channel
+  const handleCreateChannel = () => {
+    if (isSending) {
+      return;
+    }
+
+    // ask student for a subject name
+    const name = window.prompt("Enter a subject name:");
+
+    // stop if they cancel or enter an empty name
+    if (!name || !name.trim()) {
+      return;
+    }
+
+    // ask for an optional description
+    const description = window.prompt(
+      "Describe what you're studying (optional):"
+    ) ?? "";
+
+    // create and save the channel to localStorage
+    const newChannel = createChannel(name, description);
+
+    // reload the sidebar's subject list
+    setChannels(getChannels());
+
+    // automatically switch to the newly created channel
+    setChannelId(newChannel.id);
+
+    // new channels have empty conversation histories
+    setMessages([]);
+
+    // clear input and errors
+    setInput("");
+    setError("");
+  };
+
   return (
+    <div className="layout">
+      <LeftSidebar
+        channels={channels}
+        activeChannelId={channelId}
+        onSelectChannel={handleSelectChannel}
+        onCreateChannel={handleCreateChannel}
+        disabled={isSending}
+      />
+
     <div className="app-container">
 
       {/* Header */}
@@ -299,39 +373,7 @@ function App() {
           Unlearn helps you identify gaps in your understanding.
         </p>
       </footer>
-
-// main react component named App
-import { useState } from "react";
-
-function App() {
-  const [isOpen, setIsOpen] = useState(true);
-
-  return (
-    <div className="layout">
-
-      <aside className={isOpen ? "sidebar" : "sidebar collapsed"}>
-        <button onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? "←" : "→"}
-        </button>
-        
-        <h1 className="logo">unlearn.</h1>
-
-        <div className="nav-item active">
-          Home
-        </div>
-
-        <div className="nav-item">
-          + New subject
-        </div>
-
-        <div className="subjects">
-          <p className="menu-label">YOUR SUBJECTS</p>
-          <div className="nav-item"> Math</div>
-          <div className="nav-item"> Chemistry</div>
-          <div className="nav-item"> Programming</div>
-        </div>
-
-      </aside>
+    </div>
     </div>
   );
 }
