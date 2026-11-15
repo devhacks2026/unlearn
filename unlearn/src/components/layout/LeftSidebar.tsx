@@ -39,7 +39,7 @@ export default function LeftSidebar({
 
             {isOpen && (
                 <div className="sidebar-content">
-                    <h1 className="logo">unlearn.</h1>
+                    <h1 className="logo">Unlearn</h1>
 
                     <button
                         type="button"

@@ -1,14 +1,6 @@
 // main react component named App
 import PulloutBar from './components/PulloutBar'
 import './App.css'
-
-function App() {
-  
-  return (
-    
-    <div className="app-container">
-      <PulloutBar />
-
 import { useRef, useState } from "react";
 import type { ChangeEvent, SubmitEvent } from "react";
 import type { Message } from "./types/study";
@@ -246,13 +238,15 @@ function App() {
         disabled={isSending}
       />
 
+      <PulloutBar />
+
     <div className="app-container">
 
       {/* Header */}
       <header className="chat-header">
         <div className="brand">
           <span className="sparkle">✦</span>
-          <h1>Unlearn</h1>
+          <h1>{channels.find((channel) => channel.id === channelId)?.name ?? "Unlearn"}</h1>
         </div>
       </header>
 

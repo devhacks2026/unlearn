@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import './PulloutBar.css'
 
@@ -24,7 +23,7 @@ function PulloutBar() {
 
             <aside
                 id="sidebar"
-                className={`sidebar ${isSidebarOpen ? 'sidebar-open' : ''}`}
+                className={`right-sidebar ${isSidebarOpen ? 'right-sidebar-open' : ''}`}
             >
                 <button
                     id="closeSidebar"

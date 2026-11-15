@@ -13,7 +13,7 @@
 }
 
 /* Sidebar rectangle */
-.sidebar {
+.right-sidebar {
     position: fixed;
     top: 0;
     right: 0;
@@ -30,7 +30,7 @@
 }
 
 /* Sidebar slides into view */
-.sidebar-open {
+.right-sidebar-open {
     transform: translateX(0);
 }
 
