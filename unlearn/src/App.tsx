@@ -1,7 +1,7 @@
 // main react component named App
 import PulloutBar from './components/PulloutBar'
 import './App.css'
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, SubmitEvent } from "react";
 import type { Message, Concept } from "./types/study";
 import LeftSidebar from "./components/layout/LeftSidebar";
@@ -64,6 +64,26 @@ function App() {
   const [isListening, setIsListening] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // useRef creates react reference object
+  // <HTMLElement> says that reference points to HTML element
+  // null means that it doesn't point to an element yet
+  const chatMessagesRef = useRef<HTMLElement>(null);
+
+  // react hook that runs after the component has rendered
+  // want scrolling code to run after react updates component
+  // prevent user from having to scroll manually themselves
+  useEffect(() => {
+    // .current property gives access to actual HTML element
+    const chatContainer = chatMessagesRef.current;
+
+    // if the chat element exists
+    if (chatContainer) {
+      // scrollTop - container's current vertical scroll position
+      // scrollHeight - total height of its content
+      // tells browser to scroll as far down as possible
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [messages, isSending]);      // dependency array - rerun effect when either value changes
 
   // Handle file selection
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -275,7 +295,8 @@ function App() {
       </header>
 
       {/* Chat area */}
-      <main className="chat-messages">
+      {/* adding ref in main tells react to store reference to this HTML element in chatMessagesRef */}
+      <main className="chat-messages" ref={chatMessagesRef}>
         {messages.length === 0 ? (
           <div className="welcome-screen">
             <h2>Hello! What are you studying today?</h2>
