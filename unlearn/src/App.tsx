@@ -299,10 +299,18 @@ function App() {
       <main className="chat-messages" ref={chatMessagesRef}>
         {messages.length === 0 ? (
           <div className="welcome-screen">
-            <h2>Hello! What are you studying today?</h2>
+            <div className="welcome-icon">✎</div>
+
+            <h2>Let's uncover what you really know.</h2>
+
             <p>
-              Upload your notes, ask questions, and discover
-              what you really understand.
+              Pick a concept and explain it in your own words.
+              Unlearn will ask thoughtful questions, uncover
+              knowledge gaps, and track your understanding.
+            </p>
+
+            <p className="welcome-hint">
+              Try: "I think covalent bonds transfer electrons."
             </p>
           </div>
         ) : (
