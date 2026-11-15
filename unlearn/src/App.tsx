@@ -1,6 +1,6 @@
 
 import { useRef, useState } from "react";
-import type { FormEvent, ChangeEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import "./index.css";
 
 interface Message {
