@@ -36,6 +36,31 @@ function PulloutBar({ concepts }: PulloutBarProps) {
 
                 <h2 className="sidebar-heading">Topics</h2>
 
+                {/* add legend for color assessments given by AI */}
+                <div className="status-legend">
+                    <p className="legend-title">UNDERSTANDING LEVELS</p>
+
+                    <div className="legend-item">
+                        <span className="progress-circle not_assessed" />
+                        <span>Not assessed</span>
+                    </div>
+
+                    <div className="legend-item">
+                        <span className="progress-circle developing" />
+                        <span>Developing</span>
+                    </div>
+
+                    <div className="legend-item">
+                        <span className="progress-circle understood" />
+                        <span>Understood</span>
+                    </div>
+
+                    <div className="legend-item">
+                        <span className="progress-circle misunderstood" />
+                        <span>Misunderstood</span>
+                    </div>
+                </div>
+
                 <div id="topicList" className="topic-list">
                     {concepts.length === 0 ? (
                         <p className="empty-topics">
